@@ -5,6 +5,7 @@ use std::thread;
 use std::time::Duration;
 
 mod protocol;
+mod ui;
 
 const DEFAULT_VID: u16 = 0x1038;
 const DEFAULT_PID: u16 = 0x1122;
@@ -34,6 +35,8 @@ enum Commands {
     Refresh,
     /// List connected SteelSeries HID devices
     Devices,
+    /// Launch the graphical UI
+    Ui,
 }
 
 fn parse_color(s: &str) -> Result<[u8; 3]> {
@@ -128,5 +131,6 @@ fn main() -> Result<()> {
             println!("refreshed");
             Ok(())
         }
+        Commands::Ui => ui::run_ui(cli.vid, cli.pid),
     }
 }
