@@ -1,0 +1,16 @@
+[package]
+name = "steelseries-rr"
+version = "0.1.0"
+edition = "2024"
+description = "Linux control for SteelSeries KLC RGB keyboards (reverse-engineered from MSI SteelSeries protocol)"
+license = "MIT"
+repository = "https://github.com/rh0kzy/steelseries-rr"
+
+[[bin]]
+name = "steelseries-rr"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = "1"
+clap = { version = "4", features = ["derive"] }
+hidapi = "2"
