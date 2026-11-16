@@ -58,10 +58,10 @@ pub fn make_key_colors_packet(region: &str, color: [u8; 3]) -> Vec<u8> {
     let mut packet = Vec::with_capacity(524);
     packet.extend_from_slice(&[0x0e, 0x00, code, 0x00]);
 
-    // Each entry is 12 bytes: R,G,B, 5 zeros, mode(0x01), zero, keycode.
+    // Each entry is 12 bytes: R,G,B, 6 zeros, mode(0x01), zero, keycode.
     for &keycode in keycodes {
         packet.extend_from_slice(&[color[0], color[1], color[2]]);
-        packet.extend_from_slice(&[0, 0, 0, 0, 0]);
+        packet.extend_from_slice(&[0, 0, 0, 0, 0, 0]);
         packet.push(0x01);
         packet.push(0x00);
         packet.push(keycode);
