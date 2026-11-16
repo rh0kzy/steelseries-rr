@@ -4,8 +4,10 @@ use hidapi::HidApi;
 use std::thread;
 use std::time::Duration;
 
+mod keymap;
 mod protocol;
 mod ui;
+mod wallpaper;
 
 const DEFAULT_VID: u16 = 0x1038;
 const DEFAULT_PID: u16 = 0x1122;

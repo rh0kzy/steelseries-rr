@@ -46,39 +46,39 @@ pub fn region_code(name: &str) -> u8 {
     }
 }
 
+/// Build a 524-byte feature report with explicit (keycode, color) entries.
+pub fn make_keys_packet(region: &str, entries: &[(u8, [u8; 3])]) -> Vec<u8> {
+    let code = region_code(region);
+    let mut packet = Vec::with_capacity(524);
+    packet.extend_from_slice(&[0x0e, 0x00, code, 0x00]);
+
+    for (keycode, color) in entries {
+        // Each entry is 12 bytes: R,G,B, 6 zeros, mode(0x01), zero, keycode.
+        packet.extend_from_slice(&[color[0], color[1], color[2]]);
+        packet.extend_from_slice(&[0, 0, 0, 0, 0, 0]);
+        packet.push(0x01);
+        packet.push(0x00);
+        packet.push(*keycode);
+    }
+    while packet.len() < 4 + NB_KEYS * 12 {
+        packet.extend_from_slice(&[0; 12]);
+    }
+    packet.extend_from_slice(&[
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0x08,0x39,
+    ]);
+    packet.resize(524, 0);
+    packet
+}
+
 /// Build a 524-byte feature report that sets one region's keys to `color`.
 pub fn make_key_colors_packet(region: &str, color: [u8; 3]) -> Vec<u8> {
-    let code = region_code(region);
     let keycodes = REGION_KEYCODES
         .iter()
         .find(|(n, _)| *n == region)
         .map(|(_, k)| *k)
         .unwrap_or(&[]);
-
-    let mut packet = Vec::with_capacity(524);
-    packet.extend_from_slice(&[0x0e, 0x00, code, 0x00]);
-
-    // Each entry is 12 bytes: R,G,B, 6 zeros, mode(0x01), zero, keycode.
-    for &keycode in keycodes {
-        packet.extend_from_slice(&[color[0], color[1], color[2]]);
-        packet.extend_from_slice(&[0, 0, 0, 0, 0, 0]);
-        packet.push(0x01);
-        packet.push(0x00);
-        packet.push(keycode);
-    }
-    // Pad to NB_KEYS entries (should already be NB_KEYS, but be safe).
-    while packet.len() < 4 + NB_KEYS * 12 {
-        packet.extend_from_slice(&[0; 12]);
-    }
-
-    // Trailing 16 bytes.
-    packet.extend_from_slice(&[
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0x08,0x39,
-    ]);
-
-    // Ensure exact length 524.
-    packet.resize(524, 0);
-    packet
+    let entries: Vec<(u8, [u8; 3])> = keycodes.iter().map(|&k| (k, color)).collect();
+    make_keys_packet(region, &entries)
 }
 
 /// Build the 64-byte output report that latches/applies the colors.

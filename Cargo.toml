@@ -16,5 +16,6 @@ clap = { version = "4", features = ["derive"] }
 eframe = "0.29"
 egui = "0.29"
 hidapi = "2"
+image = "0.25"
 serde = { version = "1", features = ["derive"] }
 toml = "0.8"
